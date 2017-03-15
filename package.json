@@ -1,0 +1,20 @@
+{
+  "name": "dg_file",
+  "version": "8.0.0",
+  "description": "The File module for DrupalGap 8.",
+  "main": "dg_file.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/signalpoint/dg_file"
+  },
+  "keywords": ["drupalgap"],
+  "author": "Tyler Frankenstein",
+  "devDependencies": {
+    "gulp": "~3.9.1",
+    "gulp-concat": "~2.6.1",
+    "gulp-uglify": "~2.0.1",
+    "gulp-watch": "~4.3.11",
+    "gulp-minify": "0.0.15",
+    "gulp-rename": "~1.2.2"
+  }
+}
