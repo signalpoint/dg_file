@@ -3,7 +3,7 @@ dg.theme_file_input = function(variables) {
   var attrs = variables._attributes;
 
   // Generate an attribute id if one wasn't provided.
-  if (!attrs.id) { attrs.id = 'dg-file-widget-' + jDrupal.userPassword(); }
+  if (!attrs.id) { attrs.id = 'dg-file-widget-' + dg.salt(); }
   var wrapperId = attrs.id + '-wrapper';
 
   var html = '<div id="' + wrapperId + '" class="dg-file-widget-wrapper">';
