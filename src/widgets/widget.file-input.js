@@ -1,5 +1,5 @@
 dg.theme_file_input = function(variables) {
-  console.log('theme_file_input', variables);
+  //console.log('theme_file_input', variables);
   var attrs = variables._attributes;
 
   // Generate an attribute id if one wasn't provided.
@@ -13,7 +13,7 @@ dg.theme_file_input = function(variables) {
     // There is an existing file...
 
     var file = variables._file;
-    console.log('existing file', file);
+    //console.log('existing file', file);
     //var preview = theme('image_style', {
     //  style_name: 'thumbnail',
     //  path: file.uri
@@ -66,16 +66,16 @@ dg.theme_file_input = function(variables) {
 };
 
 dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId) {
-  console.log('chooseFileOnchange', arguments);
+  //console.log('chooseFileOnchange', arguments);
 
   var input = dg.qs('#' + inputId);
-  console.log('input', input);
+  //console.log('input', input);
 
   // Grab the file from the file input element.
   //var file = document.querySelector('#' + inputId).files[0];
   var file = input.files[0];
   if (!file) { return; }
-  console.log('file input', file);
+  //console.log('file input', file);
 
   // If they previously selected a file for preview, then delete it from Drupal's file management since it will be
   // unused.
@@ -108,23 +108,28 @@ dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId
     preview.height = 64;
 
     // Build the JSON deliverable.
+    var base64 = reader.result;
+    // Trim off the e.g. "data:image/png;base64," unused prefix on the base64 for Drupal's sake.
+    if (base64.indexOf('data:image') === 0) {
+      base64 = base64.substring(base64.indexOf(',') + 1);
+    }
     var fileData = {
-      file: reader.result,
+      file: base64,
       filename: file.name,
       filepath: "public://" + file.name
     };
 
     // @TODO hide the file input element, make a dg_file.*() helper for this of course
-    //document.getElementById(inputId).style.display = 'none';
     dg.hide(input);
 
     // Set an informative message.
     dg_file.setMessage(dg.t('Uploading file, please wait...'));
 
     // Save the file to Drupal...
+    // @TODO this is specific to Drupal 7, add Drupal 8 support too!
     file_save(fileData, {
       success: function(result) {
-        console.log('file_save', result);
+        //console.log('file_save', result);
         if (result.fid) {
     //
           var fid = result.fid;
