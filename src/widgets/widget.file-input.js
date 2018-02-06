@@ -1,5 +1,5 @@
 dg.theme_file_input = function(variables) {
-  //console.log('theme_file_input', variables);
+  console.log('theme_file_input', variables);
   var attrs = variables._attributes;
 
   // Generate an attribute id if one wasn't provided.
@@ -129,22 +129,40 @@ dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId
     // @TODO this is specific to Drupal 7, add Drupal 8 support too!
     file_save(fileData, {
       success: function(result) {
-        //console.log('file_save', result);
+        console.log('file_save', result);
         if (result.fid) {
-    //
           var fid = result.fid;
 
           // Set the file aside as pending until they complete this transaction.
     //      dg_file.addToPendingFileIds(fid);
-    //
+
           // Set the file id onto the input form element.
           dg.qs('#' + formInputId).value = fid;
 
+          // Show a friendly message, buddy.
           dg_file.setMessage(dg.t('File uploaded!'));
 
-          // @TODO start here, now we need to replace the "dg-file-wrapper" within the form element with a preview of
-          // the image and some buttons to remove/change the image.
-    //
+          // Replace the file wrapper (within the form element) with a preview of the image.
+          var previewId = 'dg-file-preview-' + dg.salt();
+          var wrapper = dg.qs('.dg-file-wrapper[data-id="' + formInputId + '"]');
+          wrapper.innerHTML = '<img id="' + previewId + '"/>';
+          setTimeout(function() {
+            var img = dg.qs('#' + previewId);
+            img.src = reader.result;
+            img.height = 96;
+            dg_modal.close();
+
+            // Add a delete button.
+            wrapper.innerHTML += dg.b(dg.t('Remove'), {
+              _attributes: {
+                onclick: 'dg_file.widgetRemoveOnclick(this)',
+                'data-fid': fid,
+                class: ['fa', 'fa-minus']
+              }
+            });
+
+          }, 1);
+
         }
         else { dg.error(null, null, dg.t('There was a problem saving the file.')); }
       },
@@ -162,24 +180,13 @@ dg_file.showFileInput = function(show) {
   var fileInput = dg_file.getFileInput();
 };
 
-dg_file.widgetRemoveOnclick = function(fid) {
+dg_file.widgetRemoveOnclick = function(button) {
+  var fid = button.getAttribute('data-fid');
   file_delete(fid, {
     success: function(result) {
       console.log(result);
 
-      // When editing an existing entity, the file will be marked as used by Drupal's file management
-      // system...
-      //if (result.file) {
-      //  $.each(result.file, function(entityType, entities) {
-      //    $.each(entities, function(entityId) {
-      //      // If a file is in use, we can't delete it. However, it appears that if an entity update call
-      //      // removes a reference to that file id from an e.g. image field, then Drupal automatically deletes
-      //      // the file after the entity is updated.
-      //
-      //      //dgFile.addToPendingFileIds(fid);
-      //    });
-      //  });
-      //}
+
 
     },
     error: dg.error
