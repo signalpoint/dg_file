@@ -1,9 +1,12 @@
 dg_file.setMessage = function(msg, type) {
-  document.getElementById('dg-file-form-messages').innerHTML = dg.render({
+  dg.qs('#dg-file-form-messages').innerHTML = dg.render({
     _theme: 'message',
     _type:type ? type : 'status',
     _message: msg
   });
+};
+dg_file.clearMessage = function() {
+  dg.qs('#dg-file-form-messages').innerHTML = '';
 };
 
 dg_file.parseFid = function(fid) { return parseInt(fid); };
