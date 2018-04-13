@@ -1,30 +1,22 @@
-dg_file.setMessage = function(msg, type) {
-  dg.qs('#dg-file-form-messages').innerHTML = dg.render({
-    _theme: 'message',
-    _type:type ? type : 'status',
-    _message: msg
-  });
-};
-dg_file.clearMessage = function() {
-  dg.qs('#dg-file-form-messages').innerHTML = '';
-};
-
-dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
+//dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
+/**
+ *
+ * @param file {string} The "file" input object from the DOM.
+ * @param uri {string} The file uri.
+ * @param fileInputId {string} The id of the DgFileInput
+ */
+dg_file.loaded = function(file, uri, fileInputId) {
+  console.log('loaded()', file);
 
   var isCompiled = dg.isCompiled();
+  var fileInput = dg_file.getFileInput(fileInputId);
+  var formInputId = fileInput.getFormInputId();
 
-  // Load up the file widget's variables.
+  // Load up the file widget's variables (from theme_file() in widget.file.js).
   var widgetVariables = dg_file.getFileWidget(formInputId);
   console.log('widgetVariables', widgetVariables);
 
-  console.log('file', file);
-
-  // Grab the preview widget.
-  var preview = dg.qs('#' + previewId);
-
-  // Preview the image.
-  preview.src = uri;
-  preview.height = 64;
+  //fileInput.setPreview(uri);
 
   // Step 2: Build the JSON deliverable...
   var step2 = function(base64) {
@@ -53,14 +45,9 @@ dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
     };
     console.log('fileData', fileData.filename, fileData.filepath);
 
-    // @TODO hide the file input element, make a dg_file.*() helper for this of course
-    if (!isCompiled) {
-      dg.hide(input);
-    }
-
-    // Set an informative message.
-    // @TODO this should be available to the developer... they want a custom message!
-    dg_file.setMessage(dg.t('Uploading file, please wait...'));
+    // Hide the input and set an informative message.
+    fileInput.hideInput();
+    fileInput.setMessage(dg.t('Uploading') + '...');
 
     // Save the file to Drupal...
     // @TODO this is specific to Drupal 7, add Drupal 8 support too!
@@ -68,40 +55,18 @@ dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
       success: function(result) {
         console.log('file_save', result);
         if (result.fid) {
-          var fid = result.fid;
-
-          // Set the file aside as pending until they complete this transaction.
-          //      dg_file.addToPendingFileIds(fid);
 
           // Set the file id onto the input form element.
-          dg.qs('#' + formInputId).value = fid;
+          dg.qs('#' + formInputId).value = result.fid;
 
-          // Clear out the message.
-          dg_file.clearMessage();
-
-          // Replace the file wrapper (within the form element) with a preview of the image.
-          var previewId = 'dg-file-preview-' + dg.salt();
-          var wrapper = dg.qs('.dg-file-wrapper[data-id="' + formInputId + '"]');
-          wrapper.innerHTML = '<img id="' + previewId + '" class="dg-file-preview" />';
-          setTimeout(function() {
-            var img = dg.qs('#' + previewId);
-            img.src = base64; // Careful, if this was trimmed maybe the preview could be broken.?
-            img.height = 96;
-          }, 1);
-
-          // Add a delete button.
-          // @TODO this should only show up if they have permission to delete a file.
-          //wrapper.innerHTML += dg.b(dg.t('Remove'), {
-          //  _attributes: {
-          //    onclick: 'dg_file.widgetRemoveOnclick(this)',
-          //    'data-fid': fid
-          //  }
-          //});
+          // Clear out the message and preview the image.
+          fileInput.clearMessage();
+          fileInput.setPreview(uri);
 
         }
         else { dg.error(null, null, dg.t('There was a problem saving the file.')); }
       },
-      error: function (xhr, status, msg) { dg_file.setMessage(msg, 'error'); }
+      error: function (xhr, status, msg) { fileInput.setMessage(msg, 'error'); }
     });
 
   }; // step 2
@@ -109,12 +74,10 @@ dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
   // Step 1: Get base64 of image in compiled mode only, in web app mode the base64 comes in on the "uri" argument.
   if (isCompiled) {
     dg_file.encodeImageUri(uri).then(function(base64) {
-      console.log('compiled!');
       step2(base64);
     });
   }
   else { step2(uri); }
-
 
 };
 
