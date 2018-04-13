@@ -46,19 +46,32 @@ dg.theme_file_input = function(variables) {
 
     // Generate a preview identifier.
     var previewId = id + '-preview';
+    var formInputId = variables._formInputId;
 
-    // Input widget.
-    if (!attrs.type) { attrs.type = 'file'; }
-    if (!attrs.onchange) {
-      attrs.onchange = "dg_file.chooseFileOnchange(" +
-          "'" + wrapperId + "', " +
-          "'" + attrs.id + "', " +
-          "'" + previewId + "', " +
-          "'" + variables._formInputId + "'" +
-      ")";
+    // File input widget.
+    var input = null;
+
+    // Compiled widget.
+    if (dg.isCompiled()) {
+
+      attrs.onclick = "dg_file.openFilePicker(this, '" + previewId + "', '" + formInputId + "')";
+      input = dg.b(dg.t('Choose File'), { _attributes: attrs });
+
     }
-    attrs.class.push('dg-file-widget');
-    var input = '<input ' +  dg.attrs(variables) + '/>';
+    else { // web app widget.
+
+      if (!attrs.type) { attrs.type = 'file'; }
+      if (!attrs.onchange) {
+        attrs.onchange = "dg_file.chooseFileOnchange(" +
+            "'" + wrapperId + "', " +
+            "'" + attrs.id + "', " +
+            "'" + previewId + "', " +
+            "'" + formInputId + "'" +
+            ")";
+      }
+      attrs.class.push('dg-file-widget');
+      input = '<input ' +  dg.attrs(variables) + '/>';
+    }
 
     // Preview widget.
     var previewAttrs = {
@@ -77,25 +90,21 @@ dg.theme_file_input = function(variables) {
   
 };
 
-dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId) {
-  //console.log('chooseFileOnchange', arguments);
-
-  // Load up the file widget's variables.
-  var widgetVariables = dg_file.getFileWidget(formInputId);
-  //console.log('widgetVariables', widgetVariables);
+dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId) { // web-app only...
+  console.log('chooseFileOnchange', arguments);
 
   // Load up the file input's variables.
   var variables = dg_file.getFileInput(inputId);
-  //console.log('variables', variables);
+  console.log('variables', variables);
 
   var input = dg.qs('#' + inputId);
-  //console.log('input', input);
+  console.log('input', input);
 
   // Grab the file from the file input element.
   //var file = document.querySelector('#' + inputId).files[0];
   var file = input.files[0];
   if (!file) { return; }
-  //console.log('file input', file);
+  console.log('file input', file);
 
   // If they previously selected a file for preview, then delete it from Drupal's file management since it will be
   // unused.
@@ -112,10 +121,6 @@ dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId
   //}
   //else { dg_file.read(); }
 
-  // Grab the preview widget.
-  //var preview = document.querySelector('#' + previewId);
-  var preview = dg.qs('#' + previewId);
-
   // Init a file reader.
   var reader = new FileReader();
 
@@ -124,83 +129,7 @@ dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId
 
     // The file has been loaded...
 
-    // Preview the image.
-    preview.src = reader.result;
-    preview.height = 64;
-
-    // Build the JSON deliverable...
-
-    // Trim off the e.g. "data:image/png;base64," unused prefix on the base64 for Drupal's sake.
-    var base64 = reader.result;
-    if (base64.indexOf('data:image') === 0) {
-      base64 = base64.substring(base64.indexOf(',') + 1);
-    }
-
-    // Grab the file name.
-    var fileName = file.name;
-
-    // Build the file path.
-    var filePath = "public://";
-    var dir = widgetVariables._filePathDir;
-    if (dir) { filePath += dir + '/'; }
-    filePath += fileName;
-
-    // Build the file data to POST.
-    var fileData = {
-      file: base64,
-      filename: fileName,
-      filepath: filePath
-    };
-    //console.log('fileData', fileData.filename, fileData.filepath);
-
-    // @TODO hide the file input element, make a dg_file.*() helper for this of course
-    dg.hide(input);
-
-    // Set an informative message.
-    // @TODO this should be available to the developer... they want a custom message!
-    dg_file.setMessage(dg.t('Uploading file, please wait...'));
-
-    // Save the file to Drupal...
-    // @TODO this is specific to Drupal 7, add Drupal 8 support too!
-    file_save(fileData, {
-      success: function(result) {
-        console.log('file_save', result);
-        if (result.fid) {
-          var fid = result.fid;
-
-          // Set the file aside as pending until they complete this transaction.
-    //      dg_file.addToPendingFileIds(fid);
-
-          // Set the file id onto the input form element.
-          dg.qs('#' + formInputId).value = fid;
-
-          // Clear out the message.
-          dg_file.clearMessage();
-
-          // Replace the file wrapper (within the form element) with a preview of the image.
-          var previewId = 'dg-file-preview-' + dg.salt();
-          var wrapper = dg.qs('.dg-file-wrapper[data-id="' + formInputId + '"]');
-          wrapper.innerHTML = '<img id="' + previewId + '" class="dg-file-preview" />';
-          setTimeout(function() {
-            var img = dg.qs('#' + previewId);
-            img.src = reader.result;
-            img.height = 96;
-          }, 1);
-
-          // Add a delete button.
-          // @TODO this should only show up if they have permission to delete a file.
-          //wrapper.innerHTML += dg.b(dg.t('Remove'), {
-          //  _attributes: {
-          //    onclick: 'dg_file.widgetRemoveOnclick(this)',
-          //    'data-fid': fid
-          //  }
-          //});
-
-        }
-        else { dg.error(null, null, dg.t('There was a problem saving the file.')); }
-      },
-      error: function (xhr, status, msg) { dg_file.setMessage(msg, 'error'); }
-    });
+    dg_file.loaded(file, reader.result, inputId, previewId, formInputId);
 
   }, false);
 
@@ -208,6 +137,57 @@ dg_file.chooseFileOnchange = function(wrapperId, inputId, previewId, formInputId
   if (file) { reader.readAsDataURL(file); }
 
 };
+
+
+dg_file.openFilePicker = function(button, previewId, formInputId) { // compiled app only...
+  console.log('openFilePicker', arguments);
+
+  var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
+  var options = dg_file.setOptions(srcType);
+
+  navigator.camera.getPicture(function cameraSuccess(imageUri) {
+    window.resolveLocalFileSystemURI(imageUri,
+        function(fileEntry) {
+
+          console.log(fileEntry.fullPath);
+          console.log(fileEntry);
+
+          // The file has been loaded...
+          fileEntry.file(function(file) {
+
+            dg_file.loaded(file, imageUri, button.getAttribute('id'), previewId, formInputId);
+
+          });
+
+          // @see https://www.npmjs.com/package/cordova-plugin-file#read-a-file
+          //fileEntry.file(function (file) {
+          //  var reader = new FileReader();
+          //
+          //  reader.onloadend = function() {
+          //    console.log("Successful file read: " + this.result);
+          //    //displayFileData(fileEntry.fullPath + ": " + this.result);
+          //
+          //
+          //
+          //  };
+          //
+          //  reader.readAsText(file);
+          //
+          //}, onErrorReadFile);
+
+        },
+        function() {
+          //error
+        }
+    );
+  }, function cameraError(error) {
+
+    console.debug("Unable to obtain picture: " + error, "app");
+
+  }, options);
+
+};
+
 
 dg_file.widgetRemoveOnclick = function(button) {
   var fid = button.getAttribute('data-fid');
