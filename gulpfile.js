@@ -6,6 +6,7 @@ var gulp = require('gulp'),
 
 var dgFileModuleSrc = [
   './src/*.js',
+  './src/classes/class.*.js',
   './src/includes/include.*.js',
   './src/widgets/widget.*.js'
 ];
