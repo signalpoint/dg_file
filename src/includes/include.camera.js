@@ -1,4 +1,4 @@
-// @todo camera.cleanup() for iOS: https://github.com/apache/cordova-plugin-camera#cameracleanup
+// @todo needed? - camera.cleanup() for iOS: https://github.com/apache/cordova-plugin-camera#cameracleanup
 
 dg_file.setOptions = function (srcType) {
   return {
@@ -20,7 +20,7 @@ dg_file.setOptions = function (srcType) {
  */
 dg_file.encodeImageUri = function(imageUri) {
   return new Promise(function(ok, err) {
-console.log('encoding ', imageUri);
+    console.log('encoding ', imageUri);
     // @see https://stackoverflow.com/a/11246772/763010
     var c=document.createElement('canvas');
     var ctx=c.getContext("2d");

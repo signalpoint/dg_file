@@ -5,7 +5,7 @@
  * @returns {string}
  */
 dg.theme_file = function(variables) {
-  //console.log('theme_file', variables);
+  console.log('theme_file', variables);
   var attrs = variables._attributes;
 
   // Make sure we have an id for the widget.
