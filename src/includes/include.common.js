@@ -14,7 +14,7 @@ dg_file.loaded = function(file, uri, fileInputId) {
 
   // Load up the file widget's variables (from theme_file() in widget.file.js).
   var widgetVariables = dg_file.getFileWidget(formInputId);
-  console.log('widgetVariables', widgetVariables);
+  //console.log('widgetVariables', widgetVariables);
 
   //fileInput.setPreview(uri);
 
@@ -22,11 +22,11 @@ dg_file.loaded = function(file, uri, fileInputId) {
   var step2 = function(base64) {
 
     // Trim off the e.g. "data:image/png;base64," unused prefix on the base64 for Drupal's sake.
-    console.log('trimming for drupal');
+    //console.log('trimming for drupal');
     if (base64.indexOf('data:image') === 0) {
       base64 = base64.substring(base64.indexOf(',') + 1);
     }
-    console.log('done trimming for drupal');
+    //console.log('done trimming for drupal');
 
     // Grab the file name.
     var fileName = file.name;
@@ -43,7 +43,7 @@ dg_file.loaded = function(file, uri, fileInputId) {
       filename: fileName,
       filepath: filePath
     };
-    console.log('fileData', fileData.filename, fileData.filepath);
+    //console.log('fileData', fileData.filename, fileData.filepath);
 
     // Hide the input and set an informative message.
     fileInput.hideInput();
@@ -53,7 +53,7 @@ dg_file.loaded = function(file, uri, fileInputId) {
     // @TODO this is specific to Drupal 7, add Drupal 8 support too!
     file_save(fileData, {
       success: function(result) {
-        console.log('file_save', result);
+        //console.log('file_save', result);
         if (result.fid) {
 
           // Set the file id onto the input form element.
@@ -107,16 +107,16 @@ dg_file.addToPendingFileIds = function(fid) {
   fid = dg_file.parseFid(fid);
   if (!dg_file.isPendingFileId(fid)) {
     dg_file.getPendingFileIds().push(fid);
-    console.log('added to pending list: ' + fid);
+    //console.log('added to pending list: ' + fid);
   }
 };
 dg_file.removeFromPendingFileIds = function(fid) {
   fid = dg_file.parseFid(fid);
   var fileIds = dg_file.getPendingFileIds();
-  console.log('removeFromPendingFileIds', fid, dg_file.getPendingFileIds());
+  //console.log('removeFromPendingFileIds', fid, dg_file.getPendingFileIds());
   fileIds = fileIds.filter(function(e) { return e !== fid });
   dg_file.setPendingFileIds(fileIds);
-  console.log('removeFromPendingFileIds', fid, dg_file.getPendingFileIds());
+  //console.log('removeFromPendingFileIds', fid, dg_file.getPendingFileIds());
 };
 
 //_pendingDelete: {},

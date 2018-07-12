@@ -27,7 +27,6 @@ DgFileInput.prototype.getFormInputId = function() { return this._formInputId; };
 DgFileInput.prototype.getInput = function() { return dg.qs('#' + this.id()); };
 
 DgFileInput.prototype.html = function() {
-  console.log('HTML!');
 
   var wrapperId = this.getWrapperId();
   var html = '<div id="' + wrapperId + '" class="dg-file-widget-wrapper">';
