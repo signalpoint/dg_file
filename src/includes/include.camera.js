@@ -30,8 +30,33 @@ dg_file.encodeImageUri = function(imageUri) {
       c.height=this.height;
       ctx.drawImage(img, 0,0);
       //console.log('resolving');
-      ok(c.toDataURL("image/jpeg")); // @TODO is what about incoming png?
+      ok(c.toDataURL("image/jpeg")); // @TODO what about other file formats? png, gif, etc
     };
     img.src = imageUri;
   });
+};
+
+dg_file.openCamera = function(id) {
+
+  var srcType = Camera.PictureSourceType.CAMERA;
+  var options = dg_file.setOptions(srcType);
+
+  var error = function(msg) {
+    cw_app.error(null, null, msg);
+  };
+
+  navigator.camera.getPicture(function cameraSuccess(imageUri) {
+
+    window.resolveLocalFileSystemURL(imageUri, function success(fileEntry) {
+
+      fileEntry.file(function(file) {
+
+        dg_file.loaded(file, imageUri, id);
+
+      });
+
+    }, function () { error(t('Unable to get picture from local file system.')); });
+
+  }, error, options);
+
 };
