@@ -1,6 +1,6 @@
 //dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
 /**
- *
+ * Once a file is loaded, this handler is used to save the file into Drupal.
  * @param file {string} The "file" input object from the DOM.
  * @param uri {string} The file uri.
  * @param fileInputId {string} The id of the DgFileInput
