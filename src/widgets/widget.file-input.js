@@ -49,7 +49,7 @@ dg_file.chooseFileOnchange = function(fileInputId) { // web-app only...
 };
 
 
-dg_file.openFilePicker = function(button, previewId, formInputId) { // compiled app only...
+dg_file.openFilePicker = function(id) { // compiled app only...
   //console.log('openFilePicker', arguments);
 
   var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
@@ -65,7 +65,7 @@ dg_file.openFilePicker = function(button, previewId, formInputId) { // compiled 
           // The file has been loaded...
           fileEntry.file(function(file) {
 
-            dg_file.loaded(file, imageUri, button.getAttribute('id'), previewId, formInputId);
+            dg_file.loaded(file, imageUri, id);
 
           });
 
