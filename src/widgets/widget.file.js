@@ -1,5 +1,5 @@
 /**
- *
+ * Themes a file input element and widget.
  * @param variables
  *    _filePathDir {String} the folder in the file system to save the file in, e.g. "articles/images"
  * @returns {string}
