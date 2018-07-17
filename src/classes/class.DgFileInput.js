@@ -42,26 +42,28 @@ DgFileInput.prototype.html = function() {
   // File input widget.
   var input = null;
   var attrs = this.getAttributes();
+  var id = this.id();
 
   // Compiled widget.
   if (dg.isCompiled()) {
 
     //attrs.onclick = "dg_file.openFilePicker(this, '" + previewId + "', '" + formInputId + "')";
-    attrs.onclick = "dg_file.openFilePicker(this, '" + this.id() + "')";
-    input = dg.b(dg.t('Choose File'), { _attributes: attrs });
+    attrs.onclick = "dg_file.openFilePicker('" + id + "')";
+    attrs.class.push('dg-file-choose-file');
+    input =
+          dg.b(dg.t('Choose File'), { _attributes: attrs }) +
+          dg.b(dg.t('Take Picture'), { _attributes: {
+            id: id + '-camera',
+            class: ['dg-file-take-picture'],
+            onclick: "dg_file.openCamera('" + id + "')"
+          }});
 
   }
   else { // web app widget.
 
     if (!attrs.type) { attrs.type = 'file'; }
     if (!attrs.onchange) {
-      //attrs.onchange = "dg_file.chooseFileOnchange(" +
-      //    "'" + wrapperId + "', " +
-      //    "'" + attrs.id + "', " +
-      //    "'" + previewId + "', " +
-      //    "'" + formInputId + "'" +
-      //    ")";
-      attrs.onchange = "dg_file.chooseFileOnchange('" + this.id() + "')";
+      attrs.onchange = "dg_file.chooseFileOnchange('" + id + "')";
     }
     attrs.class.push('dg-file-widget');
     input = '<input ' +  dg.attributes(attrs) + '/>';
@@ -80,35 +82,12 @@ DgFileInput.prototype.html = function() {
 
   return html + '</div>';
 
-  //if (variables._file) { // @TODO implement.
-
-  // There is an existing file...
-
-  //var file = variables._file;
-  //console.log('existing file', file);
-  //var preview = theme('image_style', {
-  //  style_name: 'thumbnail',
-  //  path: file.uri
-  //});
-  //var deleteBtn = bl(t('Remove'), null, {
-  //  attributes: {
-  //    'data-icon': 'delete',
-  //    'data-iconpos': 'notext',
-  //    onclick: 'dgFileWidgetRemoveOnclick(' + file.fid + ')',
-  //    wrapperId: wrapperId
-  //  }
-  //});
-  //html += deleteBtn + preview;
-
-  //}
-  //else {
-
-  //}
-
 };
 
 DgFileInput.prototype.hideInput = function() {
   dg.hide(this.getInput());
+  var cameraInput = dg.qs('#' + this.id() + '-camera');
+  if (cameraInput) { dg.hide(cameraInput); }
 };
 
 /**
