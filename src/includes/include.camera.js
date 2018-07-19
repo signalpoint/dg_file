@@ -1,3 +1,5 @@
+// @see https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-camera/
+
 // @todo needed? - camera.cleanup() for iOS: https://github.com/apache/cordova-plugin-camera#cameracleanup
 
 dg_file.setOptions = function (srcType) {
@@ -8,7 +10,7 @@ dg_file.setOptions = function (srcType) {
     encodingType: Camera.EncodingType.JPEG,
     //mediaType: window.Camera.MediaType.ALLMEDIA,
     mediaType: Camera.MediaType.PICTURE,
-    allowEdit: true,
+    allowEdit: false,
     correctOrientation: true  //Corrects Android orientation quirks
   };
 };
