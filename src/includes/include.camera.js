@@ -22,7 +22,6 @@ dg_file.setOptions = function (srcType) {
  */
 dg_file.encodeImageUri = function(imageUri) {
   return new Promise(function(ok, err) {
-    //console.log('encoding ', imageUri);
     // @see https://stackoverflow.com/a/11246772/763010
     var c=document.createElement('canvas');
     var ctx=c.getContext("2d");
@@ -31,10 +30,9 @@ dg_file.encodeImageUri = function(imageUri) {
       c.width=this.width;
       c.height=this.height;
       ctx.drawImage(img, 0,0);
-      //console.log('resolving');
       ok(c.toDataURL("image/jpeg")); // @TODO what about other file formats? png, gif, etc
     };
-    img.src = imageUri;
+    img.src = dg_file.cleanUri(imageUri);
   });
 };
 

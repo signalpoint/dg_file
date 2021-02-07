@@ -1,3 +1,13 @@
+/**
+ * Given a file uri, this will "clean" it.
+ * @param {string} uri
+ * @returns {string}
+ * @see https://github.com/oracle/cordova-plugin-wkwebview-file-xhr/issues/44
+ */
+dg_file.cleanUri = function(uri) {
+  return dg.platform() == 'ios' ? window.WkWebView.convertFilePath(uri) : uri;
+};
+
 //dg_file.loaded = function(file, uri, inputId, previewId, formInputId) {
 /**
  * Once a file is loaded, this handler is used to save the file into Drupal.
@@ -6,7 +16,7 @@
  * @param fileInputId {string} The id of the DgFileInput
  */
 dg_file.loaded = function(file, uri, fileInputId) {
-  console.log('loaded()', file);
+//  console.log('loaded()', file, uri, fileInputId);
 
   var isCompiled = dg.isCompiled();
   var fileInput = dg_file.getFileInput(fileInputId);
@@ -61,6 +71,11 @@ dg_file.loaded = function(file, uri, fileInputId) {
 
           // Clear out the message and preview the image.
           fileInput.clearMessage();
+
+          // Clean the uri.
+          uri = dg_file.cleanUri(uri);
+
+          // Preview the image.
           fileInput.setPreview(uri);
 
         }
@@ -147,8 +162,5 @@ dg_file.removeFromPendingFileIds = function(fid) {
 //}
 
 dg_file.read = function(file) {
-
-
-
 
 };
