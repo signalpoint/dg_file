@@ -15,6 +15,19 @@ cordova-plugin-file
 cordova-plugin-camera
 ```
 
+If you're using Cordova + iOS, you'll need this plugin...
+
+```
+cordova-plugin-wkwebview-file-xhr
+```
+
+... and need to add this to your `config.xml`:
+
+```
+<preference name="scheme" value="app" />
+<preference name="hostname" value="localhost" />
+```
+
 # Usage
 
 On a DrupalGap 8 form, try something like this:
