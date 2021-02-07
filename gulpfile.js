@@ -4,24 +4,30 @@ var gulp = require('gulp'),
     gp_rename = require('gulp-rename'),
     gp_uglify = require('gulp-uglify');
 
-var dgFileModuleSrc = [
+var moduleSrc = [
   './src/*.js',
   './src/classes/class.*.js',
   './src/includes/include.*.js',
   './src/widgets/widget.*.js'
 ];
 
-// Task to build the dg_file.min.js file.
-gulp.task('minifyJS', function(){
-  return gulp.src(dgFileModuleSrc)
-      .pipe(gp_concat('concat.js'))
-      .pipe(gulp.dest(''))
-      .pipe(gp_rename('dg_file.min.js'))
-      .pipe(gp_uglify())
-      .pipe(gulp.dest(''));
-});
+// Minify JavaScript
+function minifyJs() {
+  console.log('compressing dg_file.js...');
+  var moduleJs = gulp.src(moduleSrc)
+    .pipe(gp_concat('dg_file.js'))
+    .pipe(gulp.dest('./'));
+    console.log('compressing dg_file.min.js...');
+  return moduleJs.pipe(gp_rename('dg_file.min.js'))
+    .pipe(gp_uglify())
+    .pipe(gulp.dest('./'));
+}
+gulp.task(minifyJs);
 
-gulp.task('default', function () {
-  watch(dgFileModuleSrc, function(event) { gulp.start('minifyJS') });
-  gulp.start('minifyJS');
+gulp.task('default', function(done) {
+
+  gulp.watch(moduleSrc, gulp.series('minifyJs'));
+
+  done();
+
 });

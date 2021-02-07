@@ -7,14 +7,20 @@
     "type": "git",
     "url": "https://github.com/signalpoint/dg_file"
   },
-  "keywords": ["drupalgap"],
+  "keywords": [
+    "drupalgap"
+  ],
   "author": "Tyler Frankenstein",
   "devDependencies": {
-    "gulp": "~3.9.1",
+    "gulp": "^4.0.2",
     "gulp-concat": "~2.6.1",
-    "gulp-uglify": "~2.0.1",
-    "gulp-watch": "~4.3.11",
+    "gulp-install": "^1.1.0",
     "gulp-minify": "0.0.15",
-    "gulp-rename": "~1.2.2"
+    "gulp-rename": "~1.2.2",
+    "gulp-uglify": "~2.0.1",
+    "gulp-watch": "~4.3.11"
+  },
+  "dependencies": {
+    "gulp-cli": "^2.2.0"
   }
 }
